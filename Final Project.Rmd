@@ -1,0 +1,76 @@
+---
+title: "Analysis of the 2019 Canadian Federal Election If Everyone Voted"
+author: ""
+date: "December 9th, 2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+rm(list=ls())
+knitr::opts_chunk$set(echo = TRUE)
+
+setwd("~/Library/Mobile Documents/com~apple~CloudDocs/University/5th Year (2020-2021)/STA304/Final Project/data-cleaning")
+
+# Load cleaned survey data
+source("survey.R")
+
+# Load cleaned census data
+source("post-strat.R")
+```
+
+# Abstract
+
+# Keywords
+
+# Introduction (Section 1)
+
+In a democratic country, voting is considered to one of the most important rights the people have; voting allows for citizens of a democratic nation to vote for the candidate that best aligns with their values. For the 2019 Canadian Federal Election, the voter turnout was 67.0% [1], with the Liberal Party winning 157 seats out of 338 seats in the House of Commons, however losing the popular vote to the Conservative Party, forming a minority government. Had the voter turnout be 100.0%, could the Liberal Party have won the popular vote? This paper aims to analyze what the election results would look like in the 2019 Canadian Federal Election had everyone who was legally allowed to vote, voted.
+
+To determine what the outcome of the 2019 Canadian Federal Election would like if the voter turnout rate was 100.0%, we are going to perform multinomial logistic regression with 2019 Canadian Election Survey dataset [2], and then post-stratify with Canadian Census dataset [3]. The reason we are using a multinomial logistic regression model is because in Canada, Canadians have the option to vote from a wide selection of parties (Liberals, Conservatives, NDP, Bloc Quebecois, Green, People's, and Other) -- the model would return the probability of voting for all of the parties available.
+
+Final Paragraph: Let the reader know the layout of the report.
+In Section 2, we will be going over the methodology of our analysis; primarily, we will be going over the variables we chose to train our multinomial logistic regression, but also go in-depth into the poststratification process. Lastly, we will give our results in Section 3, and discuss the results in Section 4.
+
+# Methodology (Section 2)
+```{r}
+# Create the model
+library(tidyverse)
+model <- glm(vote_trudeau ~ education + age + income + province + gender, data=reduced_data, family= "binomial")
+broom::tidy(model)
+
+reduced_data_census_count$logodds_estimate <- 
+  model %>%
+  predict(newdata=reduced_data_census_count)
+
+reduced_data_census_count$estimate <- 
+  exp(reduced_data_census_count$logodds_estimate)/(1+exp(reduced_data_census_count$logodds_estimate))
+
+reduced_data_census_count %>%
+  mutate(alp_predict_prop = estimate*n) %>%
+  summarise(alp_predict = sum(alp_predict_prop)/sum(n))
+
+reduced_data_census_count %>%
+  mutate(alp_predict_prop = estimate*n) %>%
+  group_by(province) %>% 
+  summarise(alp_predict = sum(alp_predict_prop)/sum(n))
+```
+## Data
+
+## Model
+
+
+# Results (Section 3)
+
+# Discussion (Section 4)
+
+## Weaknesses
+
+## Next Steps
+
+# References
+
+[1] https://www.elections.ca/content.aspx?section=ele&dir=turn&document=index&lang=e
+
+[2] Stephenson, Laura B; Harell, Allison; Rubenson, Daniel; Loewen, Peter John, 2020, '2019 Canadian Election Study - Online Survey', https://doi.org/10.7910/DVN/DUS88V, Harvard Dataverse, V1
+
+[3] https://www12.statcan.gc.ca/census-recensement/2016/dp-pd/prof/index.cfm?Lang=E
