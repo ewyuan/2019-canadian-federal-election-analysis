@@ -10,7 +10,7 @@
 # interested in to inputs/data 
 # - Don't forget to gitignore it!
 
-setwd("~/Library/Mobile Documents/com~apple~CloudDocs/University/5th Year (2020-2021)/STA304/Final Project/data-cleaning")
+setwd("~/Desktop/2019-canadian-federal-election-analysis/data-cleaning")
 
 #### Workspace setup ###
 library(haven)
